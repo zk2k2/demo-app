@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9-eclipse-temurin-17'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v maven-repo:/root/.m2'
+        }
+    }
 
     environment {
         DOCKERHUB_CREDENTIALS = 'dockerhub'
@@ -8,8 +13,6 @@ pipeline {
     }
 
     stages {
-        // Remove the Clone Repo stage - Jenkins does this automatically
-        
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package'
