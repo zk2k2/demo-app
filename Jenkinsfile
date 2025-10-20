@@ -2,18 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub' // the ID of your Jenkins Docker Hub credentials
-        IMAGE_NAME = 'ziedkharrat1/demo' // replace with your Docker Hub username
-        IMAGE_TAG = "0.0.1" // can also use BUILD_NUMBER or timestamp
+        DOCKERHUB_CREDENTIALS = 'dockerhub'
+        IMAGE_NAME = 'ziedkharrat1/demo'
+        IMAGE_TAG = "0.0.1"
     }
 
     stages {
-        stage('Clone Repo') {
-            steps {
-                git branch: 'main', url: 'https://github.com/zk2k2/demo-app.git'
-            }
-        }
-
+        // Remove the Clone Repo stage - Jenkins does this automatically
+        
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package'
@@ -29,7 +25,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                    sh "echo \$PASSWORD | docker login -u \$USERNAME --password-stdin"
                     sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
